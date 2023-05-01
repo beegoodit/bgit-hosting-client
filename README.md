@@ -2,7 +2,7 @@
 
 ## Usage
 
-    #> BGIT_HOSTING_CLIENT_ENDPOINT=http://localhost:3000/api/hosting/create_docker_resource_usage_services.json BGIT_HOSTING_CLIENT_HOST=localhost BGIT_HOSTING_CLIENT_API_KEY=ae100b06f4353392dfc8c5a1b6d58dc68f092caf3b34a3adfe46d4098fe27f75 bin/bgit-hosting-client
+    #> BGIT_HOSTING_CLIENT_ENDPOINT=http://localhost:3000/api/hosting/create_docker_resource_usage_services.json BGIT_HOSTING_CLIENT_HOST=localhost BGIT_HOSTING_CLIENT_API_TOKEN=ae100b06f4353392dfc8c5a1b6d58dc68f092caf3b34a3adfe46d4098fe27f75 bin/bgit-hosting-client
 
 ## Using bgit-hosting-client as a service
 
@@ -11,6 +11,30 @@ To run the bgit-hosting-client client as a daemon service, we need to create a s
 ### Add a user
 
     #> sudo adduser bgit-hosting-client
+    #> sudo usermod -aG docker bgit-hosting-client
+
+### Install rvm
+
+    #> su - bgit-hosting-client
+    #> gpg --keyserver keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+    #> \curl -sSL https://get.rvm.io | bash
+
+### Setup the client
+
+    #> mkdir ~/bgit-hosting-client
+    #> echo "bgit-hosting-client" > .ruby-version
+    #> echo "ruby-3.2.2" > .ruby-gemset
+    #> echo 'source "https://rubygems.org"' >> Gemfile
+    #> echo 'gem "bgit-hosting-client", git: "https://github.com/beegoodit/bgit-hosting-client.git"' >> Gemfile
+    
+    #> cd ~/bgit-hosting-client
+    #> bundle install
+    
+    #> echo '#!/bin/bash' >> run.sh
+    #> echo 'source ~/.rvm/scripts/rvm' >> run.sh
+    #> echo 'rvm use' >> run.sh
+    #> echo 'BGIT_HOSTING_CLIENT_ENDPOINT=http://localhost:3000/api/hosting/create_docker_resource_usage_services.json BGIT_HOSTING_CLIENT_HOST=localhost BGIT_HOSTING_CLIENT_API_TOKEN=ae100b06f4353392dfc8c5a1b6d58dc68f092caf3b34a3adfe46d4098fe27f75 bgit-hosting-client-service' >> run.sh
+    #> chmod u+x ./run.sh
 
 ### Create the service definition
 
@@ -23,14 +47,12 @@ Create a new file /etc/systemd/system/bgit-hosting-client.service with the follo
     WorkingDirectory=/home/bgit-hosting-client/bgit-hosting-client
     User=bgit-hosting-client
     Group=bgit-hosting-client
-    ExecStart=BGIT_HOSTING_CLIENT_ENDPOINT=http://localhost:3000/api/hosting/create_docker_resource_usage_services.json BGIT_HOSTING_CLIENT_HOST=localhost BGIT_HOSTING_CLIENT_API_KEY=ae100b06f4353392dfc8c5a1b6d58dc68f092caf3b34a3adfe46d4098fe27f75 /home/bgit-hosting-client/.rvm/bin/rvm all do bundle exec bin/bgit-hosting-client
+    ExecStart=/home/bgit-hosting-client/bgit-hosting-client/run.sh
     Restart=always
     RestartSec=10
 
     [Install]
     WantedBy=multi-user.target
-
-This tells systemd to create a new service called bgit-hosting-client, which runs the bgit-hosting-client binary with the API endpoint URL as an argument. The Restart and RestartSec directives configure the service to automatically restart if it crashes or exits. The WantedBy directive specifies that the service should be started automatically during the boot process.
 
 ### Reload systemd
 

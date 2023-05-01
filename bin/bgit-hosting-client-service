@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+Bundler.require(:default)
+require 'bgit-hosting-client'
+
+interval = (ENV['BGIT_HOSTING_CLIENT_INTERVAL'] || 30).to_i
+endpoint = ENV['BGIT_HOSTING_CLIENT_ENDPOINT']
+host = ENV['BGIT_HOSTING_CLIENT_HOST']
+api_token = ENV['BGIT_HOSTING_CLIENT_API_TOKEN']
+
+puts "Starting bgit-hosting-client-service with interval #{interval} seconds."
+puts ""
+puts "Endpoint: #{endpoint}"
+puts "Host:     #{host}"
+puts ""
+
+loop do
+  client = Bgit::Hosting::Client::Stats.new(
+    endpoint,
+    host,
+    api_token
+  )
+
+  results = client.perform
+
+  results.each do |result|
+    if result.code == 201
+      puts "[#{Time.now}] Success"
+    else
+      puts "[#{Time.now}] Error: HTTP #{result.code}"
+    end
+  end
+
+  sleep(interval)
+end

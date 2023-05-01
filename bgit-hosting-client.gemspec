@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     Dir["{lib}/**/*", "MIT-LICENSE", "README.md"]
   end
-  spec.executables = ["bgit-hosting-client"]
+  spec.executables = ["bgit-hosting-client", "bgit-hosting-client-service"]
   spec.require_paths = ["lib"]
 
   spec.add_dependency "httparty"

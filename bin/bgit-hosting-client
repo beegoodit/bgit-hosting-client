@@ -4,19 +4,26 @@ require "bundler/setup"
 Bundler.require(:default)
 require 'bgit-hosting-client'
 
+endpoint = ENV['BGIT_HOSTING_CLIENT_ENDPOINT']
+host = ENV['BGIT_HOSTING_CLIENT_HOST']
+api_token = ENV['BGIT_HOSTING_CLIENT_API_TOKEN']
+
+puts "Endpoint: #{endpoint}"
+puts "Host:     #{host}"
+
 client = Bgit::Hosting::Client::Stats.new(
-  ENV['BGIT_HOSTING_CLIENT_ENDPOINT'],
-  ENV['BGIT_HOSTING_CLIENT_HOST'],
-  ENV['BGIT_HOSTING_CLIENT_API_KEY']
+  endpoint,
+  host,
+  api_token
 )
 
 results = client.perform
 
 results.each do |result|
   if result.code == 201
-    puts "Successfully posted Docker stats to #{ENV['BGIT_HOSTING_CLIENT_ENDPOINT']}"
+    puts "[#{Time.now}] Success"
   else
-    puts "Error posting Docker stats: HTTP #{result.code}"
+    puts "[#{Time.now}] Error: HTTP #{result.code}"
   end
 end
 
