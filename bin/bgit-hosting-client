@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+Bundler.require(:default)
+require 'bgit-hosting-client'
+
+client = Bgit::Hosting::Client::Stats.new(
+  ENV['BGIT_HOSTING_CLIENT_ENDPOINT'],
+  ENV['BGIT_HOSTING_CLIENT_HOST'],
+  ENV['BGIT_HOSTING_CLIENT_API_KEY']
+)
+
+results = client.perform
+
+results.each do |result|
+  if result.code == 201
+    puts "Successfully posted Docker stats to #{ENV['BGIT_HOSTING_CLIENT_ENDPOINT']}"
+  else
+    puts "Error posting Docker stats: HTTP #{result.code}"
+  end
+end
+
+if results.map(&:code).uniq.any? { |code| code != 201 }
+  exit 1
+end

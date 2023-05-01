@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    docker-stats-api (0.1.0)
+    bgit-hosting-client (0.1.0)
       httparty
 
 GEM
@@ -124,7 +124,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  docker-stats-api!
+  bgit-hosting-client!
   guard-bundler
   guard-rspec
   guard-standardrb
