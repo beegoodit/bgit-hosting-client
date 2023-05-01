@@ -12,28 +12,33 @@ To run the bgit-hosting-client client as a daemon service, we need to create a s
 
     #> sudo adduser bgit-hosting-client
     #> sudo usermod -aG docker bgit-hosting-client
+    #> sudo adduser bgit-hosting-client sudo
 
 ### Install rvm
 
     #> su - bgit-hosting-client
     #> gpg --keyserver keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
     #> \curl -sSL https://get.rvm.io | bash
+    #> source /home/bgit-hosting-client/.rvm/scripts/rvm
 
 ### Setup the client
 
     #> mkdir ~/bgit-hosting-client
-    #> echo "bgit-hosting-client" > .ruby-version
-    #> echo "ruby-3.2.2" > .ruby-gemset
+    #> cd ~/bgit-hosting-client
+
+    #> echo "ruby-3.2.2" > .ruby-version
+    #> echo "bgit-hosting-client" > .ruby-gemset
     #> echo 'source "https://rubygems.org"' >> Gemfile
     #> echo 'gem "bgit-hosting-client", git: "https://github.com/beegoodit/bgit-hosting-client.git"' >> Gemfile
     
-    #> cd ~/bgit-hosting-client
+    #> cd .
+    #> rvm install "ruby-3.2.2"
     #> bundle install
     
     #> echo '#!/bin/bash' >> run.sh
     #> echo 'source ~/.rvm/scripts/rvm' >> run.sh
     #> echo 'rvm use' >> run.sh
-    #> echo 'BGIT_HOSTING_CLIENT_ENDPOINT=http://localhost:3000/api/hosting/create_docker_resource_usage_services.json BGIT_HOSTING_CLIENT_HOST=localhost BGIT_HOSTING_CLIENT_API_TOKEN=ae100b06f4353392dfc8c5a1b6d58dc68f092caf3b34a3adfe46d4098fe27f75 bgit-hosting-client-service' >> run.sh
+    #> echo 'BGIT_HOSTING_CLIENT_ENDPOINT=https://production-hosting-beegoodit-de.hosting.beegoodit.de/api/hosting/create_docker_resource_usage_services.json BGIT_HOSTING_CLIENT_HOST=localhost BGIT_HOSTING_CLIENT_API_TOKEN=<api-token> bgit-hosting-client-service' >> run.sh
     #> chmod u+x ./run.sh
 
 ### Create the service definition
